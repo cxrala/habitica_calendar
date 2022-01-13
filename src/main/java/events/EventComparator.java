@@ -1,10 +1,10 @@
-import com.google.api.client.util.DateTime;
+package events;
+
 import com.google.api.services.calendar.model.Event;
-import com.google.api.services.calendar.model.EventDateTime;
 
 import java.util.Comparator;
 
-public class EventComparator implements Comparator<Event> {
+class EventComparator implements Comparator<Event> {
     @Override
     public int compare(Event e1, Event e2) {
         long e1Start = e1.getStart().getDateTime().getValue();
@@ -17,4 +17,6 @@ public class EventComparator implements Comparator<Event> {
         }
         return 0;
     }
+
+
 }

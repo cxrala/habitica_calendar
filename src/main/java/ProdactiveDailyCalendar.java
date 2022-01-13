@@ -7,23 +7,17 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.client.util.DateTime;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.CalendarScopes;
-import com.google.api.services.calendar.model.CalendarList;
-import com.google.api.services.calendar.model.CalendarListEntry;
 import com.google.api.services.calendar.model.Event;
-import com.google.api.services.calendar.model.Events;
+import events.EventsGrabber;
+import habiticasupport.HabiticaCredentials;
+import habiticasupport.HabiticaEventSyncer;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 
@@ -41,6 +35,8 @@ public class ProdactiveDailyCalendar {
      */
     private static final List<String> SCOPES = Collections.singletonList(CalendarScopes.CALENDAR_READONLY);
     private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
+
+    private static final String HABITICA_CREDENTIALS_FILE_PATH = "src/main/resources/habitica_credentials.json";
 
     /**
      * Creates an authorized Credential object.
@@ -68,31 +64,38 @@ public class ProdactiveDailyCalendar {
         return credential;
     }
 
-    public static void main(String... args) throws IOException, GeneralSecurityException {
+    public static void main(String... args) throws IOException, GeneralSecurityException, InterruptedException {
         // Build a new authorized API client service.
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
         Calendar service = new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
                 .setApplicationName(APPLICATION_NAME)
                 .build();
 
+        String userId;
+        String apiId;
+
+        File f = new File(HABITICA_CREDENTIALS_FILE_PATH);
+        if (!(f.exists() && !f.isDirectory())) {
+            System.out.println("You don't have a credentials file set up.");
+            System.out.println("You need to provide your user ID and API ID, found in settings > API.");
+            System.out.println("Please enter your Habitica user ID:");
+
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(System.in));
+
+            userId = reader.readLine();
+            System.out.println("Please enter your Habitica API ID:");
+            apiId = reader.readLine();
+        } else {
+            HabiticaCredentials creds = HabiticaCredentials.getFromJSON(HABITICA_CREDENTIALS_FILE_PATH);
+            userId = creds.getUserId();
+            apiId = creds.getApiId();
+        }
+
         EventsGrabber events = new EventsGrabber(service);
         List<Event> todayEvents = events.getEvents();
+        HabiticaEventSyncer syncer = new HabiticaEventSyncer(todayEvents);
 
-        if (todayEvents.isEmpty()) {
-            System.out.println("No upcoming events found.");
-        } else {
-            System.out.println("Upcoming events");
-            for (Event event : todayEvents) {
-                DateTime start = event.getStart().getDateTime();
-                DateTime end = event.getEnd().getDateTime();
-                if (start == null) {
-                    start = event.getStart().getDate();
-                }
-                if (end == null) {
-                    end = event.getEnd().getDate();
-                }
-                System.out.printf("%s (%s) - (%s)\n", event.getSummary(), start, end);
-            }
-        }
+        System.out.println(syncer.sendEvents(userId, apiId));
     }
 }

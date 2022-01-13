@@ -1,3 +1,5 @@
+package events;
+
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.CalendarList;
@@ -7,13 +9,14 @@ import com.google.api.services.calendar.model.Events;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.List;
 
 public class EventsGrabber {
-    Calendar service;
-    DateTime min;
-    DateTime max;
+    private final Calendar service;
+    private final DateTime min;
+    private final DateTime max;
 
     EventsGrabber(Calendar service, int days) {
         this.service = service;
@@ -29,11 +32,11 @@ public class EventsGrabber {
         max = new DateTime(date.getTimeInMillis());
     }
 
-    EventsGrabber(Calendar service) {
+    public EventsGrabber(Calendar service) {
         this(service, 1);
     }
 
-    List<Event> getEvents() throws IOException {
+    public List<Event> getEvents() throws IOException {
         List<Event> todayEvents = new ArrayList<>();
         String pageToken = null;
         do {
@@ -52,7 +55,7 @@ public class EventsGrabber {
             pageToken = calendarList.getNextPageToken();
         } while (pageToken != null);
 
-        todayEvents.sort(new EventComparator());
+        todayEvents.sort((new EventComparator()).reversed());
 
         return todayEvents;
     }
