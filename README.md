@@ -1,5 +1,10 @@
 # habitica_calendar
-the easiest way to make daily to do lists given you already have your life sorted on google calendar.
+> Habitica calendar allows you to add tasks easily in habitica, ordered chronologically, based on your google calendar for that day.
 
-There's a cool RPG-inspired habit website called "Habitica": https://habitica.com
-habitica_calendar allows you to create to do lists on habitica based on events in your google calendar.
+This is to be integrated with prodactive, but also works perfectly fine on its own.
+
+Plans:
+----
+* Integrate with prodactive
+* Add functionality to delete old tasks
+* Expand outwards to other forms of to do lists?
