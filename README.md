@@ -8,3 +8,4 @@ Plans:
 * Integrate with prodactive
 * Add functionality to delete old tasks
 * Expand outwards to other forms of to do lists?
+* Check if tasks already exist, if they do don't create another one (or allow for some sort of dynamic updating?)
