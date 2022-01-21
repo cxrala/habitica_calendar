@@ -1,7 +1,5 @@
 package taskmanager;
 
-import java.util.Objects;
-
 // types for habitica api types.
 public enum Types {
     HABIT("habit"), DAILY("daily"), TODO("todo"), REWARD("reward");

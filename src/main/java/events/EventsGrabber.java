@@ -9,7 +9,6 @@ import com.google.api.services.calendar.model.Events;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.List;
 

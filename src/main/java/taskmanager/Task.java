@@ -1,5 +1,8 @@
 package taskmanager;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /**
  * Base task class. To be converted to JSON file format.
  * For more info about Habitica's API on tasks, see here: https://habitica.com/apidoc/#api-Task-CreateUserTasks
@@ -10,6 +13,7 @@ public class Task {
     String type;
     Number priority;
     String notes;
+    String[] tags;
 
 
     // TODO: add integration for checklist given stated in block
@@ -23,6 +27,7 @@ public class Task {
         // optional
         private Priorities priority = Priorities.MEDIUM;
         private String notes = "";
+        private ArrayList<String> tags = new ArrayList<>(0);
 
         public Builder(String text, Types type) {
             this.text = text;
@@ -43,6 +48,16 @@ public class Task {
             return this;
         }
 
+        public Builder setTags(String[] tagArray) {
+            tags = new ArrayList<>(Arrays.asList(tagArray));
+            return this;
+        }
+
+        public Builder setTags(String tag) {
+            tags.add(tag);
+            return this;
+        }
+
         public Task build() {
             return new Task(this);
         }
@@ -53,6 +68,7 @@ public class Task {
         type = builder.type.label;
         priority = builder.priority.num;
         notes = builder.notes;
+        tags = builder.tags.toArray(new String[0]);
     }
 
 }

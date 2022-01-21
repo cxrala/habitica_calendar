@@ -80,12 +80,11 @@ public class ProdactiveDailyCalendar {
             System.out.println("You need to provide your user ID and API ID, found in settings > API.");
             System.out.println("Please enter your Habitica user ID:");
 
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(System.in));
-
-            userId = reader.readLine();
-            System.out.println("Please enter your Habitica API ID:");
-            apiId = reader.readLine();
+            try(BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
+                userId = reader.readLine();
+                System.out.println("Please enter your Habitica API ID:");
+                apiId = reader.readLine();
+            }
         } else {
             HabiticaCredentials creds = HabiticaCredentials.getFromJSON(HABITICA_CREDENTIALS_FILE_PATH);
             userId = creds.getUserId();
