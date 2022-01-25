@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -22,7 +23,7 @@ public class TagGenerator {
         this.apiId = apiId;
     }
 
-    public static TagGenerator getTagGenerator(String userId, String apiId) {
+    public static TagGenerator getTagGenerator(String userId, String apiId) throws IOException, InterruptedException {
         Map<String, String> tagMap = new HashMap<>();
 
         HttpClient client = HttpClient.newHttpClient();
@@ -32,9 +33,7 @@ public class TagGenerator {
                 .setHeader("x-api-key", apiId)
                 .build();
 
-        String jsonStr = client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(HttpResponse::body)
-                .join();
+        String jsonStr = client.send(request, HttpResponse.BodyHandlers.ofString()).body();
 
         JsonObject json = new Gson().fromJson(jsonStr, JsonObject.class);
         JsonArray tagData = json.getAsJsonArray("data");
@@ -51,7 +50,7 @@ public class TagGenerator {
         return tagMap.containsKey(name);
     }
 
-    public String getUUID(String name) {
+    public String getUUID(String name) throws IOException, InterruptedException {
         if (checkTagExists(name)) {
             return tagMap.get(name);
         }
@@ -61,7 +60,7 @@ public class TagGenerator {
     }
 
     // returns the UUID of the new tag
-    private String createNewTag(String name) {
+    private String createNewTag(String name) throws IOException, InterruptedException {
         String nameJson = String.format("{\"name\": \"%s\"}", name);
 
         HttpClient client = HttpClient.newHttpClient();
@@ -73,9 +72,7 @@ public class TagGenerator {
                 .POST(HttpRequest.BodyPublishers.ofString(nameJson))
                 .build();
 
-        String jsonStr = client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(HttpResponse::body)
-                .join();
+        String jsonStr = client.send(request, HttpResponse.BodyHandlers.ofString()).body();
 
         JsonObject json = new Gson().fromJson(jsonStr, JsonObject.class);
         JsonArray tagData = json.getAsJsonArray("data");

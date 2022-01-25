@@ -17,7 +17,8 @@ public class EventsGrabber {
     private final DateTime min;
     private final DateTime max;
 
-    EventsGrabber(Calendar service, int days) {
+    //todo: boolean to determine whether from start of day or now
+    EventsGrabber(Calendar service, int days, boolean fromStart) {
         this.service = service;
 
         java.util.Calendar date = new GregorianCalendar();
@@ -26,13 +27,19 @@ public class EventsGrabber {
         date.set(java.util.Calendar.SECOND, 0);
         date.set(java.util.Calendar.MILLISECOND, 0);
 
-        min = new DateTime(date.getTimeInMillis());
+        if (fromStart) {
+            min = new DateTime(date.getTimeInMillis());
+        } else {
+            min = new DateTime(System.currentTimeMillis());
+        }
+
         date.add(java.util.Calendar.DAY_OF_MONTH, days);
         max = new DateTime(date.getTimeInMillis());
+
     }
 
-    public EventsGrabber(Calendar service) {
-        this(service, 1);
+    public EventsGrabber(Calendar service, boolean fromStart) {
+        this(service, 1, fromStart);
     }
 
     public List<Event> getEvents() throws IOException {

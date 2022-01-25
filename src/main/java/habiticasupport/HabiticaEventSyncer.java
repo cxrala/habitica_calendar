@@ -6,6 +6,7 @@ import io.github.furstenheim.CopyDown;
 import taskmanager.Priorities;
 import taskmanager.Task;
 import taskmanager.Types;
+import habiticasupport.tags.TagGenerator;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -22,10 +23,13 @@ public class HabiticaEventSyncer {
         this.events = events;
     }
 
-    public String sendEvents(String userId, String apiId) throws IOException, InterruptedException {
+    public void sendEvents(String userId, String apiId, String tag) throws IOException, InterruptedException {
+
+        var tagGen = TagGenerator.getTagGenerator(userId, apiId).getUUID(tag);
 
         if (events.isEmpty()) {
-            return "No events sent as calendar empty.";
+            System.out.println("No events sent as calendar empty.");
+            return;
         } else {
             for (Event event : events) {
                 CopyDown converter = new CopyDown();
@@ -34,14 +38,16 @@ public class HabiticaEventSyncer {
                 Task task = new Task.Builder(eventName, Types.TODO)
                         .setPriority(Priorities.MEDIUM)
                         .setNotes(event.getDescription() != null ? converter.convert(event.getDescription()) : "")
-                        //.setTags("habitica_calendar")
+                        .setTags(tagGen)
                         .build();
+
+                Thread.sleep(2000);
 
                 HabiticaAPIHandler handler = new HabiticaAPIHandler(task);
                 System.out.println("INFO | " + handler.postTask(userId, apiId));
             }
         }
-        return "Success";
+        System.out.println("Success");
     }
 
     private String generateEventName(Event event) {
@@ -67,4 +73,5 @@ public class HabiticaEventSyncer {
 
         return String.format("%s - %s | %s", startDateFormatted, endDateFormatted, text);
     }
+
 }

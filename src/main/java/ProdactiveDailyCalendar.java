@@ -14,6 +14,7 @@ import com.google.api.services.calendar.model.Event;
 import events.EventsGrabber;
 import habiticasupport.HabiticaCredentials;
 import habiticasupport.HabiticaEventSyncer;
+import habiticasupport.HabiticaUpdater;
 
 import java.io.*;
 import java.security.GeneralSecurityException;
@@ -91,10 +92,7 @@ public class ProdactiveDailyCalendar {
             apiId = creds.getApiId();
         }
 
-        EventsGrabber events = new EventsGrabber(service);
-        List<Event> todayEvents = events.getEvents();
-        HabiticaEventSyncer syncer = new HabiticaEventSyncer(todayEvents);
-
-        System.out.println(syncer.sendEvents(userId, apiId));
+        HabiticaUpdater updater = new HabiticaUpdater(userId, apiId, service);
+        updater.update(false);
     }
 }
