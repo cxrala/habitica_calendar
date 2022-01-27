@@ -6,6 +6,4 @@ This is to be integrated with prodactive, but also works perfectly fine on its o
 Plans:
 ----
 * Integrate with prodactive
-* Add functionality to delete old tasks
 * Expand outwards to other forms of to do lists?
-* Check if tasks already exist, if they do don't create another one (or allow for some sort of dynamic updating?)
